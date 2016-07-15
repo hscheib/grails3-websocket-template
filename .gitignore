@@ -1,0 +1,6 @@
+.DS_STORE
+.asscache
+.gradle/
+.idea/
+build/
+src/main/webapp/node_modules
