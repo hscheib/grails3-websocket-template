@@ -1,28 +1,32 @@
 var Constants = require('../constants');
 var Dispatcher = require('../dispatcher/dispatcher');
-var request = require('superagent');
 
+var socket = null
 
-var dispatchError = function (error, action) {
-    Dispatcher.dispatch({
-        action: action,
-        error: error
-    });
-};
+function openSocket() {
+    socket = new WebSocket("ws://localhost:8080/socket");
 
-var hasError = function (err, res) {
-    return err || res.status >= 400;
-};
-
-
-var getError = function (err, res) {
-    if (err) {
-        return err;
-    }
-    return {
-        message: 'There was a problem with the server.'
+    socket.onmessage = function (message) {
+        WebsocketActions.setState(message.data);
     };
-};
+    socket.onclose = function () {
+        console.log("socket closed");
+    };
+    socket.onerror = function () {
+    };
+}
+
+function sendMessage(message) {
+    if(socket === null) {
+        openSocket();
+    } else {
+        socket.send(message);
+    }
+}
+
+function closeSocket() {
+    socket.close();
+}
 
 var WebsocketActions = {
     setState: function(state) {
@@ -30,8 +34,16 @@ var WebsocketActions = {
             action: Constants.GET_STATE,
             json: state
         });
+    },
+    sendMessage: function(message) {
+        sendMessage(message);
+    },
+    connect: function() {
+        openSocket();
+    },
+    disconnect: function() {
+        closeSocket();
     }
-
 };
 
 module.exports = WebsocketActions;
