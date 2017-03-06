@@ -9,8 +9,8 @@ function openSocket() {
     socket.onmessage = function (message) {
         WebsocketActions.setState(message.data);
     };
-    socket.onclose = function () {
-        console.log("socket closed");
+    socket.onclose = function (event) {
+        console.log("socket closed ", event.code);
     };
     socket.onerror = function () {
     };

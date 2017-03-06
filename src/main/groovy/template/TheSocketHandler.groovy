@@ -3,7 +3,7 @@ package template
 import org.springframework.web.socket.*
 
 class TheSocketHandler implements WebSocketHandler {
-    private final static Map sockets = [:]
+    private static Map sockets = [:]
 
     @Override
     void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -27,6 +27,8 @@ class TheSocketHandler implements WebSocketHandler {
     void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         println "CLOSED: $closeStatus"
         sockets.remove(session.id)
+        sendToAllSessions(new TextMessage("ID ${session.id} has left!"))
+
     }
 
     @Override
